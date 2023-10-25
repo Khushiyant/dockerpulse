@@ -10,12 +10,12 @@ import re
 load_dotenv()
 
 class GPTQA:
-    def __init__(self, api_key):
-        openai.api_key = api_key
-        self.model_engine = "gpt-3.5-turbo"
+    def __init__(self):
         self.prompt = "I have a problem with my Docker logs. Can you help me troubleshoot?"
         self.temperature = 0.5
         self.max_tokens = 2048
+        self.model_engine = "gpt-3.5-turbo"
+        self.llm = ChatOpenAI(model_name=self.model_engine,temperature=self.temperature,max_tokens=self.max_tokens)
 
     def search(query):
         with DDGS() as ddgs:
@@ -37,8 +37,11 @@ class GPTQA:
         # Generate a solution using OpenAI's GPT-3 API
         prompt = f"{self.prompt}\n\nLogs:\n{logs}\n\nSolution:"
 
-        llm = ChatOpenAI(model_name=self.model_engine,temperature=self.temperature,max_tokens=self.max_tokens)
-        agent = initialize_agent(tools, llm, agent=AgentType.OPENAI_MULTI_FUNCTIONS, verbose=True)
+        
+        agent = initialize_agent(tools, self.llm, agent=AgentType.OPENAI_MULTI_FUNCTIONS, verbose=True)
         answer =  agent.run(prompt)
         return answer
         
+if __name__ == "__main__":
+    gpt = GPTQA()
+    print(gpt.generate_solution("I have a problem with my Docker logs. Can you help me troubleshoot?"))

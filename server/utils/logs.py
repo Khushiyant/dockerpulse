@@ -7,7 +7,7 @@ load_dotenv()
 
 class Parser:
     def __init__(self):
-        # self.client = docker.from_env()
+        self.client = docker.from_env()
         self.prompt = "Here is a list of the logs from a docker container. Your job is to split the logs into individual log entries with logid, logdate and log line. Before splitting please understand the structure of logs. Write NA where information is not available. Return data in a csv format. Do not return any other text other than the csv data."
         self.temperature = 0.5
         self.max_tokens = 2048

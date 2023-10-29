@@ -1,8 +1,9 @@
 import docker
+from utils.logs import Parser
+from utils.anamoly import Detection
 
-class Dockerpulse:
-    def __init__(self):
-        pass
-
-    def get_logs(self, container):
-        return docker.from_env().containers.get(container).logs().decode('utf-8')
+class Dockerpulse(Parser, Detection):
+    def __init__(self, container, encoder):
+        Parser.__init__(container)
+        Detection.__init__(encoder, self.logs)
+        self.encoder = encoder

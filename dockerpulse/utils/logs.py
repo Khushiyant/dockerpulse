@@ -6,21 +6,22 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Parser:
-    def __init__(self):
+    def __init__(self, container):
         self.client = docker.from_env()
         self.prompt = "Here is a list of the logs from a docker container. Your job is to split the logs into individual log entries with logid, logdate and log line. Before splitting please understand the structure of logs. Write NA where information is not available. Return data in a csv format. Do not return any other text other than the csv data."
         self.temperature = 0.5
         self.max_tokens = 2048
         self.model_engine = "gpt-3.5-turbo"
         self.llm = OpenAI(model_name=self.model_engine,temperature=self.temperature,max_tokens=self.max_tokens)
+        self.container = container
+        self.logs = self._get_logs()
 
-
-    def process_logs(self, logs):
-        logs = self.llm(self.prompt + "\n\nLogs:\n" + logs)
+    def process_logs(self):
+        logs = self.llm(self.prompt + "\n\nLogs:\n" + self.logs)
         return logs
 
-    def get_logs(self, container):
-        return self.process_logs(self.client.containers.get(container).logs().decode('utf-8'))
+    def _get_logs(self):
+        return self.process_logs(self.client.containers.get(self.container).logs().decode('utf-8'))
     
 
 if __name__ == "__main__":

@@ -8,13 +8,14 @@ import seaborn as sns
 
 
 class Detection:
-    def __init__(self, data):
+    def __init__(self, encoder ,data):
+        self.encoder = encoder
+        self.data = data
+
+    def get_anamoly(self):
         pass
 
-
-class Optimizations:
-    def __init__(self):
-        pass
+    
 
 
 if __name__ == "__main__":

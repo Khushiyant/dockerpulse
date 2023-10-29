@@ -1,6 +1,6 @@
 import docker
-from utils.logs import Parser
-from utils.anamoly import Detection
+from .utils.logs import Parser
+from .utils.anamoly import Detection
 
 class Dockerpulse(Parser, Detection):
     def __init__(self, container, encoder):

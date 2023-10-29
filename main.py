@@ -1,15 +1,39 @@
-from typing import Union
+from dockerpulse.cli import Dockerpulse
+import argparse
+from dotenv import load_dotenv
 
-from fastapi import FastAPI
+def config():
+    load_dotenv()
 
-app = FastAPI()
+def main():
+    # START: ASCII Art
+    docker_ascii = """
+        $$$$$$$\                      $$\                           $$$$$$$\            $$\                     
+        $$  __$$\                     $$ |                          $$  __$$\           $$ |                    
+        $$ |  $$ | $$$$$$\   $$$$$$$\ $$ |  $$\  $$$$$$\   $$$$$$\  $$ |  $$ |$$\   $$\ $$ | $$$$$$$\  $$$$$$\  
+        $$ |  $$ |$$  __$$\ $$  _____|$$ | $$  |$$  __$$\ $$  __$$\ $$$$$$$  |$$ |  $$ |$$ |$$  _____|$$  __$$\ 
+        $$ |  $$ |$$ /  $$ |$$ /      $$$$$$  / $$$$$$$$ |$$ |  \__|$$  ____/ $$ |  $$ |$$ |\$$$$$$\  $$$$$$$$ |
+        $$ |  $$ |$$ |  $$ |$$ |      $$  _$$<  $$   ____|$$ |      $$ |      $$ |  $$ |$$ | \____$$\ $$   ____|
+        $$$$$$$  |\$$$$$$  |\$$$$$$$\ $$ | \$$\ \$$$$$$$\ $$ |      $$ |      \$$$$$$  |$$ |$$$$$$$  |\$$$$$$$\ 
+        \_______/  \______/  \_______|\__|  \__| \_______|\__|      \__|       \______/ \__|\_______/  \_______|                                                                                                                                                                                                        
+    """
+    print(docker_ascii)
+    # END: ASCII Art
+
+    parser = argparse.ArgumentParser(
+        prog='Dockerpulse CLI',
+        description='Dockerpulse CLI to detect anomalies in Docker containers and send alerts to Slack and output solution to stdout',
+        add_help=True)
+
+    parser.add_argument('-c', '--container', help='Container ID', required=True)
+    parser.add_argument('-l', '--llm', help='Large Language Model', default='bert')
+    
+    try:
+        args = parser.parse_args()
+        print(Dockerpulse().get_logs(args.container))
+    except Exception as e:
+        print(e)   
 
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+if __name__ == "__main__":
+    main()

@@ -1,21 +1,13 @@
-# write code for anamoly detection using isolation forest in log files
-# import sklearn
-# from sklearn.ensemble import IsolationForest
-# import numpy as np
-# import pandas as pd
-# import matplotlib.pyplot as plt
-# import seaborn as sns
+from transformers import BertTokenizer, TFBertModel
 
 
 class Detection:
-    def __init__(self, encoder ,data):
-        self.encoder = encoder
-        self.data = data
+    def __init__(self, embeddings):
+        self.embeddings = embeddings
+        self.model = TFBertModel.from_pretrained('bert-base-uncased')
 
     def get_anamoly(self):
-        pass
-
-    
+        return self.model(self.embeddings)
 
 
 if __name__ == "__main__":

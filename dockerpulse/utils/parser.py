@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 # Load .env file
 load_dotenv()
 
+
 class Parser:
     def __init__(self, container):
         self.client = docker.from_env()
@@ -12,20 +13,27 @@ class Parser:
         self.temperature = 0.5
         self.max_tokens = 2048
         self.model_engine = "gpt-3.5-turbo"
-        self.llm = OpenAI(model_name=self.model_engine,temperature=self.temperature,max_tokens=self.max_tokens)
+        self.llm = OpenAI(model_name=self.model_engine,
+                          temperature=self.temperature, max_tokens=self.max_tokens)
         self.container = container
         self.logs = self._get_logs()
 
-    def process_logs(self):
+    def _process_logs(self):
+        '''
+        `process_logs` returns the embedding for the BERT model
+
+        return:
+            BERTEmbeddings
+        '''
         logs = self.llm(self.prompt + "\n\nLogs:\n" + self.logs)
         return logs
 
     def _get_logs(self):
         return self.process_logs(self.client.containers.get(self.container).logs().decode('utf-8'))
-    
+
 
 if __name__ == "__main__":
-    print("\n"+ Parser().process_logs("""/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+    print("\n" + Parser().process_logs("""/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
 /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
 /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
@@ -42,5 +50,3 @@ if __name__ == "__main__":
 2021/08/28 09:02:59 [notice] 1#1: start worker process 31
 2021/08/28 09:02:59 [notice] 1#1: start worker process 32
 """))
-
-        

@@ -19,7 +19,7 @@ class Parser:
         return:
             BERTEmbeddings
         '''
-        logs = self.llm(self.prompt + "\n\nLogs:\n" + self.logs)
+        logs = ""
         return logs
 
     def _get_logs(self):

@@ -7,8 +7,8 @@ from dockerpulse.utils.gptQA import GPTQA
 
 class Dockerpulse(Parser, Detection):
     def __init__(self, container):
-        Parser.__init__(container)
-        Detection.__init__(self._process_logs())
+        Parser.__init__(self, container=container)
+        Detection.__init__()
 
     def analysis(self) -> AnyStr:
         # TODO: Prompt for complete analysis of the logs

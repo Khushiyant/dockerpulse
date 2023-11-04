@@ -1,7 +1,5 @@
-docker==6.1.3
+docker
 duckduckgo_search==3.9.3
 langchain==0.0.325
 openai==0.28.1
 python-dotenv==1.0.0
-transformers==4.34.1
-tensorflow==2.14.0

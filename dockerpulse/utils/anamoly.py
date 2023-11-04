@@ -2,8 +2,7 @@ from transformers import BertTokenizer, TFBertModel
 
 
 class Detection:
-    def __init__(self, embeddings):
-        self.embeddings = embeddings
+    def __init__(self):
         self.model = TFBertModel.from_pretrained('bert-base-uncased')
 
     def get_anamoly(self):

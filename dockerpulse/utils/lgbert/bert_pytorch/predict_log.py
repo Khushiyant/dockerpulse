@@ -227,6 +227,9 @@ class Predictor():
         return total_results, output_cls
 
     def predict(self):
+        is_anomaly = False
+        logs = None
+
         model = torch.load(self.model_path)
         model.to(self.device)
         model.eval()
@@ -256,6 +259,7 @@ class Predictor():
 
         print("test abnormal predicting")
         test_abnormal_results, test_abnormal_errors = self.helper(model, self.output_dir, "test_abnormal", vocab, scale, error_dict)
+
 
         print("Saving test normal results")
         with open(self.model_dir + "test_normal_results", "wb") as f:
@@ -287,4 +291,12 @@ class Predictor():
         elapsed_time = time.time() - start_time
         print('elapsed_time: {}'.format(elapsed_time))
 
+        if test_abnormal_errors and test_normal_errors:
+            logs += "Error: " + str(test_abnormal_errors) + "\n"
+            logs += "Normal: " + str(test_normal_errors) + "\n"
+            logs += "Best Threshold: " + str(best_th) + "\n"
+            logs += "Best Sequence Threshold: " + str(best_seq_th) + "\n"
 
+            is_anomaly = True
+
+        return is_anomaly, logs

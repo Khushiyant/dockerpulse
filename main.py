@@ -1,6 +1,7 @@
 from dockerpulse.cli import Dockerpulse
 import argparse
 from dotenv import load_dotenv
+from dockerpulse.utils.slack import SlackNotifier
 
 
 def config():
@@ -35,13 +36,20 @@ def main():
                         help='Container ID', required=True)
     parser.add_argument('-e', '--encoder',
                         help='Large Language Model Encoder', default='bert')
+    parser.add_argument('-p', '--parser',
+                        help='Log Parser', default='drain')
+    parser.add_argument('-l', '--log-format',
+                        help="Regex for log format", default=open('log_format.txt', 'r').read())
 
     try:
         args = parser.parse_args()
 
-        pulse = Dockerpulse(args.container)
+        pulse = Dockerpulse(args.container, args.parser, args.log_format)
 
-        print(pulse.analysis())
+        sol, anomaly, error_logs = pulse.analysis()
+        if anomaly:
+            sn = SlackNotifier()
+            sn.send_notification(error_logs, sol)
 
     except Exception as e:
         print(e)

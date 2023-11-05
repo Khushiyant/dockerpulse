@@ -8,9 +8,9 @@ import torch
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 
-from bert_pytorch.dataset import WordVocab
-from bert_pytorch.dataset import LogDataset
-from bert_pytorch.dataset.sample import fixed_window
+from .dataset import WordVocab
+from .dataset import LogDataset
+from .dataset.sample import fixed_window
 
 
 def compute_anomaly(results, params, seq_threshold=0.5):

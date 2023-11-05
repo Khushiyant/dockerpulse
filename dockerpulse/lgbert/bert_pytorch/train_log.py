@@ -1,9 +1,9 @@
 from torch.utils.data import DataLoader
-from bert_pytorch.model import BERT
-from bert_pytorch.trainer import BERTTrainer
-from bert_pytorch.dataset import LogDataset, WordVocab
-from bert_pytorch.dataset.sample import generate_train_valid
-from bert_pytorch.dataset.utils import save_parameters
+from .model import BERT
+from .trainer import BERTTrainer
+from .dataset import LogDataset, WordVocab
+from .dataset.sample import generate_train_valid
+from .dataset.utils import save_parameters
 
 import matplotlib.pyplot as plt
 import seaborn as sns

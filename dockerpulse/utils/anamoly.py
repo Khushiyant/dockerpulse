@@ -1,4 +1,4 @@
-from .lgbert.bert_pytorch.predict_log import Predictor
+from ..lgbert.bert_pytorch.predict_log import Predictor
 
 class Detection:
     def __init__(self, options):

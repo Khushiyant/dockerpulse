@@ -1,7 +1,7 @@
 import docker
 from langchain.chat_models import ChatOpenAI as OpenAI
 from dotenv import load_dotenv
-from .lgbert.logparser import Drain, Spell
+from ..lgbert.logparser import Drain, Spell
 
 # Load .env file
 load_dotenv()

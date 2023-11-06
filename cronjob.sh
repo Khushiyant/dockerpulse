@@ -1,0 +1,1 @@
+*/2 * * * * python main.py --container $CONTAINER_ID

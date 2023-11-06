@@ -1,4 +1,3 @@
-import docker
 from .utils.parser import Parser
 from .utils.anamoly import Detection
 from typing import AnyStr
@@ -65,9 +64,10 @@ class Dockerpulse(Parser, Detection):
     options["gaussian_std"] = 1
 
     def __init__(self, container, parser, log_format):
+        self.log_format = log_format
         Parser.__init__(self, container=container,
-                        parser=parser, log_format=log_format)
-        Detection.__init__(self.options)
+                        parser=parser, log_format=self.log_format)
+        Detection.__init__(self, self.options)
 
     def analysis(self) -> AnyStr:
         anomaly, error_logs = None, None
@@ -79,6 +79,6 @@ class Dockerpulse(Parser, Detection):
             sol = self.qna.generate_solution(self.get_anamoly())
             anomaly, error_logs = self.get_anamoly()
         except Exception as e:
-            return sol, e
+            return sol, e, None
         
         return sol, anomaly, error_logs

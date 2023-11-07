@@ -1,5 +1,6 @@
 import docker
 from ..lgbert.logparser import Drain, Spell
+from dotenv import load_dotenv
 
 # Load .env file
 load_dotenv()

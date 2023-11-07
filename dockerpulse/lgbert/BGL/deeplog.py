@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
+import torch
+from logdeep.dataset.vocab import Vocab
+from logdeep.tools.utils import *
+from logdeep.tools.train import Trainer
+from logdeep.tools.predict import Predicter
+from logdeep.models.lstm import *
 import platform
 import argparse
 import sys
 sys.path.append('../')
 
-from logdeep.models.lstm import *
-from logdeep.tools.predict import Predicter
-from logdeep.tools.train import Trainer
-from logdeep.tools.utils import *
-from logdeep.dataset.vocab import Vocab
-
-import torch
 
 output_dir = "../output/bgl/"
 
@@ -72,7 +71,8 @@ options["gaussian_std"] = 0
 options["num_outputs"] = 1
 
 
-print("Features logkey:{} time: {}".format(options["is_logkey"], options["is_time"]))
+print("Features logkey:{} time: {}".format(
+    options["is_logkey"], options["is_time"]))
 print("Device:", options['device'])
 
 seed_everything(seed=1234)
@@ -103,8 +103,16 @@ if __name__ == "__main__":
 
     predict_parser = subparsers.add_parser('predict')
     predict_parser.set_defaults(mode='predict')
-    predict_parser.add_argument('--mean', type=float, default=0, help='error gaussian distribution mean')
-    predict_parser.add_argument('--std', type=float, default=0, help='error gaussian distribution std')
+    predict_parser.add_argument(
+        '--mean',
+        type=float,
+        default=0,
+        help='error gaussian distribution mean')
+    predict_parser.add_argument(
+        '--std',
+        type=float,
+        default=0,
+        help='error gaussian distribution std')
 
     vocab_parser = subparsers.add_parser('vocab')
     vocab_parser.set_defaults(mode='vocab')

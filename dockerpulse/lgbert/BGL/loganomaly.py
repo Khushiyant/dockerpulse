@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
+import torch
+from logdeep.dataset.vocab import Vocab
+from logdeep.tools.utils import *
+from logdeep.tools.train import Trainer
+from logdeep.tools.predict import Predicter
+from logdeep.models.lstm import *
 import argparse
 import sys
 sys.path.append('../')
 
-from logdeep.models.lstm import *
-from logdeep.tools.predict import Predicter
-from logdeep.tools.train import Trainer
-from logdeep.tools.utils import *
-from logdeep.dataset.vocab import Vocab
-
-import torch
 
 output_dir = "../output/bgl/"
 
@@ -73,16 +72,17 @@ options["gaussian_std"] = 0
 options["num_outputs"] = 1
 
 
-print("Features logkey:{} time: {}".format(options["is_logkey"], options["is_time"]))
+print("Features logkey:{} time: {}".format(
+    options["is_logkey"], options["is_time"]))
 print("Device:", options['device'])
 
 seed_everything(seed=1234)
 
 Model = loganomaly(input_size=options['input_size'],
-                hidden_size=options['hidden_size'],
-                num_layers=options['num_layers'],
-                vocab_size=options["vocab_size"],
-                embedding_dim=options["embedding_dim"])
+                   hidden_size=options['hidden_size'],
+                   num_layers=options['num_layers'],
+                   vocab_size=options["vocab_size"],
+                   embedding_dim=options["embedding_dim"])
 
 
 def train():

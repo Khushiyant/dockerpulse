@@ -4,8 +4,10 @@ import torch
 import random
 import numpy as np
 
+
 class BERTDataset(Dataset):
-    def __init__(self, corpus_path, vocab, seq_len, corpus_lines=None, encoding="utf-8", on_memory=True, predict_mode=False):
+    def __init__(self, corpus_path, vocab, seq_len, corpus_lines=None,
+                 encoding="utf-8", on_memory=True, predict_mode=False):
         self.vocab = vocab
         self.seq_len = seq_len
 
@@ -22,7 +24,8 @@ class BERTDataset(Dataset):
             self.file = open(corpus_path, "r", encoding=encoding)
             self.random_file = open(corpus_path, "r", encoding=encoding)
 
-            for _ in range(random.randint(self.corpus_lines if self.corpus_lines < 1000 else 1000)):
+            for _ in range(random.randint(
+                    self.corpus_lines if self.corpus_lines < 1000 else 1000)):
                 self.random_file.__next__()
 
     def __len__(self):
@@ -40,12 +43,17 @@ class BERTDataset(Dataset):
         t1_label = [self.vocab.pad_index] + t1_label + [self.vocab.pad_index]
         t2_label = t2_label + [self.vocab.pad_index]
 
-        segment_label = ([1 for _ in range(len(t1))] + [2 for _ in range(len(t2))])[:self.seq_len]
+        segment_label = ([1 for _ in range(len(t1))] +
+                         [2 for _ in range(len(t2))])[:self.seq_len]
         bert_input = (t1 + t2)[:self.seq_len]
         bert_label = (t1_label + t2_label)[:self.seq_len]
 
-        padding = [self.vocab.pad_index for _ in range(self.seq_len - len(bert_input))]
-        bert_input.extend(padding), bert_label.extend(padding), segment_label.extend(padding)
+        padding = [
+            self.vocab.pad_index for _ in range(
+                self.seq_len -
+                len(bert_input))]
+        bert_input.extend(padding), bert_label.extend(
+            padding), segment_label.extend(padding)
 
         output = {"bert_input": bert_input,
                   "bert_label": bert_label,
@@ -64,7 +72,9 @@ class BERTDataset(Dataset):
             if prob < 0.15:
                 if self.predict_mode:
                     tokens[i] = self.vocab.mask_index
-                    output_label.append(self.vocab.stoi.get(token, self.vocab.unk_index))
+                    output_label.append(
+                        self.vocab.stoi.get(
+                            token, self.vocab.unk_index))
                     continue
 
                 prob /= 0.15
@@ -79,9 +89,12 @@ class BERTDataset(Dataset):
 
                 # 10% randomly change token to current token
                 else:
-                    tokens[i] = self.vocab.stoi.get(token, self.vocab.unk_index)
+                    tokens[i] = self.vocab.stoi.get(
+                        token, self.vocab.unk_index)
 
-                output_label.append(self.vocab.stoi.get(token, self.vocab.unk_index))
+                output_label.append(
+                    self.vocab.stoi.get(
+                        token, self.vocab.unk_index))
 
             else:
                 tokens[i] = self.vocab.stoi.get(token, self.vocab.unk_index)
@@ -122,10 +135,8 @@ class BERTDataset(Dataset):
         if line is None:
             self.file.close()
             self.file = open(self.corpus_path, "r", encoding=self.encoding)
-            for _ in range(random.randint(self.corpus_lines if self.corpus_lines < 1000 else 1000)):
+            for _ in range(random.randint(
+                    self.corpus_lines if self.corpus_lines < 1000 else 1000)):
                 self.random_file.__next__()
             line = self.random_file.__next__()
         return line[:-1].split("\t")[1]
-
-
-

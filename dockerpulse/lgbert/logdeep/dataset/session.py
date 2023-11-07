@@ -1,6 +1,7 @@
-#see https://pinjiahe.github.io/papers/ISSRE16.pdf
+# see https://pinjiahe.github.io/papers/ISSRE16.pdf
 import os
 import pandas as pd
+
 
 def session_window():
     pass
@@ -70,12 +71,10 @@ def sliding_window(raw_data, para):
         ])
 
     assert len(start_end_index_pair) == len(new_data)
-    print('there are %d instances (sliding windows) in this dataset\n' % len(start_end_index_pair))
+    print(
+        'there are %d instances (sliding windows) in this dataset\n' %
+        len(start_end_index_pair))
     return pd.DataFrame(new_data, columns=raw_data.columns)
-
-
-
-
 
 
 def fixed_window(df, features, index, label, window_size='T'):
@@ -91,7 +90,8 @@ def fixed_window(df, features, index, label, window_size='T'):
     for f in features:
         agg_dict[f] = _custom_resampler
 
-    seq_df = df.set_index(index).resample(window_size).agg(agg_dict).reset_index()
+    seq_df = df.set_index(index).resample(
+        window_size).agg(agg_dict).reset_index()
     return seq_df
 
 
@@ -105,4 +105,3 @@ def deeplog_file_generator(filename, df, features):
             for val in zip(*row[features]):
                 f.write(','.join([str(v) for v in val]) + ' ')
             f.write('\n')
-

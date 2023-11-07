@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch
 from .bert import BERT
 
+
 class BERTLog(nn.Module):
     """
     BERT Log Model
@@ -18,8 +19,12 @@ class BERTLog(nn.Module):
         self.mask_lm = MaskedLogModel(self.bert.hidden, vocab_size)
         self.time_lm = TimeLogModel(self.bert.hidden)
         # self.fnn_cls = LinearCLS(self.bert.hidden)
-        #self.cls_lm = LogClassifier(self.bert.hidden)
-        self.result = {"logkey_output": None, "time_output": None, "cls_output": None, "cls_fnn_output": None}
+        # self.cls_lm = LogClassifier(self.bert.hidden)
+        self.result = {
+            "logkey_output": None,
+            "time_output": None,
+            "cls_output": None,
+            "cls_fnn_output": None}
 
     def forward(self, x, time_info):
         x = self.bert(x, time_info=time_info)
@@ -34,6 +39,7 @@ class BERTLog(nn.Module):
         # print(self.result["cls_fnn_output"].shape)
 
         return self.result
+
 
 class MaskedLogModel(nn.Module):
     """
@@ -62,6 +68,7 @@ class TimeLogModel(nn.Module):
     def forward(self, x):
         return self.linear(x)
 
+
 class LogClassifier(nn.Module):
     def __init__(self, hidden):
         super().__init__()
@@ -69,6 +76,7 @@ class LogClassifier(nn.Module):
 
     def forward(self, cls):
         return self.linear(cls)
+
 
 class LinearCLS(nn.Module):
     def __init__(self, hidden):

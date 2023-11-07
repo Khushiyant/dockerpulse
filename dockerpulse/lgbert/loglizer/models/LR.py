@@ -2,12 +2,12 @@
 """
 The implementation of the logistic regression model for anomaly detection.
 
-Authors: 
+Authors:
     LogPAI Team
 
-Reference: 
-    [1] Peter Bodík, Moises Goldszmidt, Armando Fox, Hans Andersen. Fingerprinting 
-        the Datacenter: Automated Classification of Performance Crises. The European 
+Reference:
+    [1] Peter Bodík, Moises Goldszmidt, Armando Fox, Hans Andersen. Fingerprinting
+        the Datacenter: Automated Classification of Performance Crises. The European
         Conference on Computer Systems (EuroSys), 2010.
 
 """
@@ -16,9 +16,11 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 from ..utils import metrics
 
+
 class LR(object):
 
-    def __init__(self, penalty='l2', C=100, tol=0.01, class_weight=None, max_iter=100):
+    def __init__(self, penalty='l2', C=100, tol=0.01,
+                 class_weight=None, max_iter=100):
         """ The Invariants Mining model for anomaly detection
 
         Attributes
@@ -55,5 +57,6 @@ class LR(object):
         print('====== Evaluation summary ======')
         y_pred = self.predict(X)
         precision, recall, f1 = metrics(y_pred, y_true)
-        print('Precision: {:.3f}, recall: {:.3f}, F1-measure: {:.3f}\n'.format(precision, recall, f1))
+        print(
+            'Precision: {:.3f}, recall: {:.3f}, F1-measure: {:.3f}\n'.format(precision, recall, f1))
         return precision, recall, f1

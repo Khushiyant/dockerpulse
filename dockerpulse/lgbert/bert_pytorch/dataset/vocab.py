@@ -4,6 +4,7 @@ from collections import Counter
 import sys
 sys.path.append("../")
 
+
 class TorchVocab(object):
     """Defines a vocabulary object that will be used to numericalize a field.
     Attributes:
@@ -131,7 +132,8 @@ class WordVocab(Vocab):
                 counter[word] += 1
         super().__init__(counter, max_size=max_size, min_freq=min_freq)
 
-    def to_seq(self, sentence, seq_len=None, with_eos=False, with_sos=False, with_len=False):
+    def to_seq(self, sentence, seq_len=None, with_eos=False,
+               with_sos=False, with_len=False):
         if isinstance(sentence, str):
             sentence = sentence.split()
 
@@ -166,4 +168,3 @@ class WordVocab(Vocab):
     def load_vocab(vocab_path: str) -> 'WordVocab':
         with open(vocab_path, "rb") as f:
             return pickle.load(f)
-

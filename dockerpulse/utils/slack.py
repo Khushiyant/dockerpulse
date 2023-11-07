@@ -6,7 +6,8 @@ import os
 
 load_dotenv()
 
-def _create_channel(self, channel_name = "dockerlogs"):
+
+def _create_channel(self, channel_name="dockerlogs"):
     """
     This function checks if a channel with the given name already exists.
     If it doesn't, it creates a new channel.
@@ -18,7 +19,7 @@ def _create_channel(self, channel_name = "dockerlogs"):
         response = self.client.conversations_list(
             types="public_channel"
         )
-    
+
         for channel in response["channels"]:
             if channel["name"] == channel_name:
                 return
@@ -26,8 +27,10 @@ def _create_channel(self, channel_name = "dockerlogs"):
     except SlackApiError as e:
         print(f"Error creating channel: {e}")
 
+
 class SlackNotifier:
-    def __init__(self,channel="dockerlogs", token = os.getenv("SLACK_BOT_TOKEN")):
+    def __init__(self, channel="dockerlogs",
+                 token=os.getenv("SLACK_BOT_TOKEN")):
         """
         This is the constructor for the SlackNotifier class.
 
@@ -38,7 +41,7 @@ class SlackNotifier:
         self.client = WebClient(token=token)
         self.channel = channel
         _create_channel(self)
-    
+
     def send_notification(self, log, solution):
         try:
             self.client.chat_postMessage(
@@ -47,7 +50,6 @@ class SlackNotifier:
             )
         except SlackApiError as e:
             print(f"Error sending notification: {e}")
-
 
 
 if __name__ == "__main__":

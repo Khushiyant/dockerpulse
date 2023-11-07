@@ -70,15 +70,15 @@ class Dockerpulse(Parser, Detection):
         Detection.__init__(self, self.options)
 
     def analysis(self) -> AnyStr:
-        anomaly, error_logs = None, None
+        anomaly = None
         sol = "No solution found"
 
         # TODO: Prompt for complete analysis of the logs
         self.qna = GPTQA()
         try:
-            sol = self.qna.generate_solution(self.get_anamoly())
-            anomaly, error_logs = self.get_anamoly()
+            anomaly = self.get_anamoly(self.logs)
+            sol = self.qna.generate_solution(self.logs)
         except Exception as e:
             return sol, e, None
-        
-        return sol, anomaly, error_logs
+
+        return sol, anomaly

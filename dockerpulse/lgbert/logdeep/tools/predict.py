@@ -1,23 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from logdeep.dataset.sample import session_window, sliding_window
+from logdeep.dataset.log import log_dataset
+from tqdm import tqdm
+from torch.utils.data import DataLoader
+import torch.nn.functional as F
+import torch
+import numpy as np
+import pickle
 import gc
 import os
 import sys
 import time
 from collections import Counter, defaultdict
 sys.path.append('../../')
-
-import pickle
-import numpy as np
-import torch
-import torch.nn.functional as F
-from torch.utils.data import DataLoader
-from tqdm import tqdm
-
-from logdeep.dataset.log import log_dataset
-from logdeep.dataset.sample import session_window, sliding_window
-
 
 
 def generate(output_dir, name):
@@ -56,7 +53,8 @@ class Predicter():
     def detect_logkey_anomaly(self, output, label):
         num_anomaly = 0
         for i in range(len(label)):
-            predicted = torch.argsort(output[i])[-self.num_candidates:].clone().detach().cpu()
+            predicted = torch.argsort(
+                output[i])[-self.num_candidates:].clone().detach().cpu()
             if label[i] not in predicted:
                 num_anomaly += 1
         return num_anomaly
@@ -73,7 +71,8 @@ class Predicter():
 
         return total_errors
 
-    def find_best_threshold(self, test_normal_results, test_abnormal_results, threshold_range):
+    def find_best_threshold(self, test_normal_results,
+                            test_abnormal_results, threshold_range):
         test_abnormal_length = len(test_abnormal_results)
         test_normal_length = len(test_normal_results)
         res = [0, 0, 0, 0, 0, 0, 0, 0]  # th,tp, tn, fp, fn,  p, r, f1
@@ -93,7 +92,8 @@ class Predicter():
                 res = [th, TP, TN, FP, FN, P, R, F1]
         return res
 
-    def unsupervised_helper(self, model, data_iter, vocab, data_type, scale=None, min_len=0):
+    def unsupervised_helper(self, model, data_iter, vocab,
+                            data_type, scale=None, min_len=0):
         test_results = []
         normal_errors = []
 
@@ -119,26 +119,30 @@ class Predicter():
                     logkey = line[:, 0]
                 else:
                     logkey = line.squeeze()
-                    # if time duration doesn't exist, then create a zero array for time
+                    # if time duration doesn't exist, then create a zero array
+                    # for time
                     tim = np.zeros(logkey.shape)
 
                 if scale is not None:
-                    tim = np.array(tim).reshape(-1,1)
+                    tim = np.array(tim).reshape(-1, 1)
                     tim = scale.transform(tim).reshape(-1).tolist()
 
-                logkeys, times = [logkey.tolist()], [tim.tolist()] # add next axis
+                logkeys, times = [
+                    logkey.tolist()], [
+                    tim.tolist()]  # add next axis
 
-                logs, labels = sliding_window((logkeys, times), vocab, window_size=self.window_size, is_train=False)
+                logs, labels = sliding_window(
+                    (logkeys, times), vocab, window_size=self.window_size, is_train=False)
                 dataset = log_dataset(logs=logs,
-                                        labels=labels,
-                                        seq=self.sequentials,
-                                        quan=self.quantitatives,
-                                        sem=self.semantics,
-                                        param=self.parameters)
+                                      labels=labels,
+                                      seq=self.sequentials,
+                                      quan=self.quantitatives,
+                                      sem=self.semantics,
+                                      param=self.parameters)
                 data_loader = DataLoader(dataset,
-                                               batch_size=min(len(dataset), 128),
-                                               shuffle=True,
-                                               pin_memory=True)
+                                         batch_size=min(len(dataset), 128),
+                                         shuffle=True,
+                                         pin_memory=True)
                 # batch_size = len(dataset)
                 num_logkey_anomaly = 0
                 num_predicted_logkey = 0
@@ -151,10 +155,11 @@ class Predicter():
 
                     num_predicted_logkey += len(label)
 
-                    num_logkey_anomaly += self.detect_logkey_anomaly(output, label)
+                    num_logkey_anomaly += self.detect_logkey_anomaly(
+                        output, label)
 
                 # result for line at idx
-                result = {"logkey_anomaly":num_logkey_anomaly,
+                result = {"logkey_anomaly": num_logkey_anomaly,
                           "predicted_logkey": num_predicted_logkey
                           }
                 test_results.append(result)
@@ -182,14 +187,22 @@ class Predicter():
 
         # Test the model
         start_time = time.time()
-        test_normal_results, normal_errors = self.unsupervised_helper(model, test_normal_loader, vocab, 'test_normal', scale=scale, min_len=self.min_len)
-        test_abnormal_results, abnormal_errors = self.unsupervised_helper(model, test_abnormal_loader, vocab, 'test_abnormal', scale=scale, min_len=self.min_len)
+        test_normal_results, normal_errors = self.unsupervised_helper(
+            model, test_normal_loader, vocab, 'test_normal', scale=scale, min_len=self.min_len)
+        test_abnormal_results, abnormal_errors = self.unsupervised_helper(
+            model, test_abnormal_loader, vocab, 'test_abnormal', scale=scale, min_len=self.min_len)
 
-        print("Saving test normal results", self.save_dir + "test_normal_results")
+        print(
+            "Saving test normal results",
+            self.save_dir +
+            "test_normal_results")
         with open(self.save_dir + "test_normal_results", "wb") as f:
             pickle.dump(test_normal_results, f)
 
-        print("Saving test abnormal results", self.save_dir + "test_abnormal_results")
+        print(
+            "Saving test abnormal results",
+            self.save_dir +
+            "test_abnormal_results")
         with open(self.save_dir + "test_abnormal_results", "wb") as f:
             pickle.dump(test_abnormal_results, f)
 
@@ -199,7 +212,8 @@ class Predicter():
         print('Best threshold', TH)
         print("Confusion matrix")
         print("TP: {}, TN: {}, FP: {}, FN: {}".format(TP, TN, FP, FN))
-        print('Precision: {:.3f}%, Recall: {:.3f}%, F1-measure: {:.3f}%'.format(P, R, F1))
+        print(
+            'Precision: {:.3f}%, Recall: {:.3f}%, F1-measure: {:.3f}%'.format(P, R, F1))
 
         elapsed_time = time.time() - start_time
         print('elapsed_time: {}'.format(elapsed_time))
@@ -209,7 +223,8 @@ class Predicter():
         model.load_state_dict(torch.load(self.model_path)['state_dict'])
         model.eval()
         print('model_path: {}'.format(self.model_path))
-        test_logs, test_labels = session_window(self.output_dir, datatype='test')
+        test_logs, test_labels = session_window(
+            self.output_dir, datatype='test')
         test_dataset = log_dataset(logs=test_logs,
                                    labels=test_labels,
                                    seq=self.sequentials,

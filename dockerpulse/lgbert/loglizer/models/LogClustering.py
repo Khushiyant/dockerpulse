@@ -1,11 +1,11 @@
 """
 The implementation of Log Clustering model for anomaly detection.
 
-Authors: 
+Authors:
     LogPAI Team
 
-Reference: 
-    [1] Qingwei Lin, Hongyu Zhang, Jian-Guang Lou, Yu Zhang, Xuewei Chen. Log Clustering 
+Reference:
+    [1] Qingwei Lin, Hongyu Zhang, Jian-Guang Lou, Yu Zhang, Xuewei Chen. Log Clustering
         based Problem Identification for Online Service Systems. International Conference
         on Software Engineering (ICSE), 2016.
 
@@ -22,7 +22,8 @@ from ..utils import metrics
 
 class LogClustering(object):
 
-    def __init__(self, max_dist=0.3, anomaly_threshold=0.3, mode='online', num_bootstrap_samples=1000):
+    def __init__(self, max_dist=0.3, anomaly_threshold=0.3,
+                 mode='online', num_bootstrap_samples=1000):
         """
         Attributes
         ----------
@@ -30,10 +31,10 @@ class LogClustering(object):
             anomaly_threshold: float, the threshold for anomaly detection
             mode: str, 'offline' or 'online' mode for clustering
             num_bootstrap_samples: int, online clustering starts with a bootstraping process, which
-                determines the initial cluster representatives offline using a subset of samples 
-            representatives: ndarray, the representative samples of clusters, of shape 
+                determines the initial cluster representatives offline using a subset of samples
+            representatives: ndarray, the representative samples of clusters, of shape
                 num_clusters-by-num_events
-            cluster_size_dict: dict, the size of each cluster, used to update representatives online 
+            cluster_size_dict: dict, the size of each cluster, used to update representatives online
         """
         self.max_dist = max_dist
         self.anomaly_threshold = anomaly_threshold
@@ -42,10 +43,11 @@ class LogClustering(object):
         self.representatives = list()
         self.cluster_size_dict = dict()
 
-    def fit(self, X):   
-        print('====== Model summary ======')         
+    def fit(self, X):
+        print('====== Model summary ======')
         if self.mode == 'offline':
-            # The offline mode can process about 10K samples only due to huge memory consumption.
+            # The offline mode can process about 10K samples only due to huge
+            # memory consumption.
             self._offline_clustering(X)
         elif self.mode == 'online':
             # Bootstrapping phase
@@ -68,7 +70,7 @@ class LogClustering(object):
         print('====== Evaluation summary ======')
         y_pred = self.predict(X)
         precision, recall, f1 = metrics(y_pred, y_true)
-        print('Precision: {:.3f}, recall: {:.3f}, F1-measure: {:.3f}\n' \
+        print('Precision: {:.3f}, recall: {:.3f}, F1-measure: {:.3f}\n'
               .format(precision, recall, f1))
         return precision, recall, f1
 
@@ -102,8 +104,8 @@ class LogClustering(object):
                 if min_dist <= self.max_dist:
                     self.cluster_size_dict[clu_id] += 1
                     self.representatives[clu_id] = self.representatives[clu_id] \
-                                                 + (instance_vec - self.representatives[clu_id]) \
-                                                 / self.cluster_size_dict[clu_id]
+                        + (instance_vec - self.representatives[clu_id]) \
+                        / self.cluster_size_dict[clu_id]
                     continue
             self.cluster_size_dict[len(self.representatives)] = 1
             self.representatives.append(instance_vec)
@@ -113,7 +115,7 @@ class LogClustering(object):
         # pprint.pprint(self.representatives.tolist())
 
     def _distance_metric(self, x1, x2):
-        norm= LA.norm(x1) * LA.norm(x2)
+        norm = LA.norm(x1) * LA.norm(x2)
         distance = 1 - np.dot(x1, x2) / (norm + 1e-8)
         if distance < 1e-8:
             distance = 0
@@ -133,5 +135,3 @@ class LogClustering(object):
                 min_dist = dist
                 min_index = i
         return min_dist, min_index
-
-

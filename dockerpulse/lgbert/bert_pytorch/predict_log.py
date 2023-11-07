@@ -20,13 +20,14 @@ def compute_anomaly(results, params, seq_threshold=0.5):
     for seq_res in results:
         # label pairs as anomaly when over half of masked tokens are undetected
         if (is_logkey and seq_res["undetected_tokens"] > seq_res["masked_tokens"] * seq_threshold) or \
-                (is_time and seq_res["num_error"]> seq_res["masked_tokens"] * seq_threshold) or \
+                (is_time and seq_res["num_error"] > seq_res["masked_tokens"] * seq_threshold) or \
                 (params["hypersphere_loss_test"] and seq_res["deepSVDD_label"]):
             total_errors += 1
     return total_errors
 
 
-def find_best_threshold(test_normal_results, test_abnormal_results, params, th_range, seq_range):
+def find_best_threshold(test_normal_results,
+                        test_abnormal_results, params, th_range, seq_range):
     best_result = [0] * 9
     for seq_th in seq_range:
         FP = compute_anomaly(test_normal_results, params, seq_th)
@@ -78,21 +79,25 @@ class Predictor():
         self.radius = None
         self.test_ratio = options["test_ratio"]
         self.mask_ratio = options["mask_ratio"]
-        self.min_len=options["min_len"]
+        self.min_len = options["min_len"]
 
     def detect_logkey_anomaly(self, masked_output, masked_label):
         num_undetected_tokens = 0
         output_maskes = []
         for i, token in enumerate(masked_label):
-            # output_maskes.append(torch.argsort(-masked_output[i])[:30].cpu().numpy()) # extract top 30 candidates for mask labels
+            # output_maskes.append(torch.argsort(-masked_output[i])[:30].cpu().numpy())
+            # # extract top 30 candidates for mask labels
 
-            if token not in torch.argsort(-masked_output[i])[:self.num_candidates]:
+            if token not in torch.argsort(-masked_output[i])[
+                    :self.num_candidates]:
                 num_undetected_tokens += 1
 
-        return num_undetected_tokens, [output_maskes, masked_label.cpu().numpy()]
+        return num_undetected_tokens, [
+            output_maskes, masked_label.cpu().numpy()]
 
     @staticmethod
-    def generate_test(output_dir, file_name, window_size, adaptive_window, seq_len, scale, min_len):
+    def generate_test(output_dir, file_name, window_size,
+                      adaptive_window, seq_len, scale, min_len):
         """
         :return: log_seqs: num_samples x session(seq)_length, tim_seqs: num_samples x session_length
         """
@@ -100,7 +105,7 @@ class Predictor():
         tim_seqs = []
         with open(output_dir + file_name, "r") as f:
             for idx, line in tqdm(enumerate(f.readlines())):
-                #if idx > 40: break
+                # if idx > 40: break
                 log_seq, tim_seq = fixed_window(line, window_size,
                                                 adaptive_window=adaptive_window,
                                                 seq_len=seq_len, min_len=min_len)
@@ -130,21 +135,23 @@ class Predictor():
         print(f"{file_name} size: {len(log_seqs)}")
         return log_seqs, tim_seqs
 
-    def helper(self, model, output_dir, file_name, vocab, scale=None, error_dict=None):
+    def helper(self, model, output_dir, file_name,
+               vocab, scale=None, error_dict=None):
         total_results = []
         total_errors = []
         output_results = []
         total_dist = []
         output_cls = []
-        logkey_test, time_test = self.generate_test(output_dir, file_name, self.window_size, self.adaptive_window, self.seq_len, scale, self.min_len)
+        logkey_test, time_test = self.generate_test(
+            output_dir, file_name, self.window_size, self.adaptive_window, self.seq_len, scale, self.min_len)
 
         # use 1/10 test data
         if self.test_ratio != 1:
             num_test = len(logkey_test)
             rand_index = torch.randperm(num_test)
-            rand_index = rand_index[:int(num_test * self.test_ratio)] if isinstance(self.test_ratio, float) else rand_index[:self.test_ratio]
+            rand_index = rand_index[:int(num_test * self.test_ratio)] if isinstance(
+                self.test_ratio, float) else rand_index[:self.test_ratio]
             logkey_test, time_test = logkey_test[rand_index], time_test[rand_index]
-
 
         seq_dataset = LogDataset(logkey_test, time_test, vocab, seq_len=self.seq_len,
                                  corpus_lines=self.corpus_lines, on_memory=self.on_memory, predict_mode=True, mask_ratio=self.mask_ratio)
@@ -194,11 +201,14 @@ class Predictor():
                     # detect by deepSVDD distance
                     assert result["cls_output"][i].size() == self.center.size()
                     # dist = torch.sum((result["cls_fnn_output"][i] - self.center) ** 2)
-                    dist = torch.sqrt(torch.sum((result["cls_output"][i] - self.center) ** 2))
+                    dist = torch.sqrt(
+                        torch.sum(
+                            (result["cls_output"][i] - self.center) ** 2))
                     total_dist.append(dist.item())
 
                     # user defined threshold for deepSVDD_label
-                    seq_results["deepSVDD_label"] = int(dist.item() > self.radius)
+                    seq_results["deepSVDD_label"] = int(
+                        dist.item() > self.radius)
                     #
                     # if dist > 0.25:
                     #     pass
@@ -220,7 +230,7 @@ class Predictor():
         # for time
         # return total_results, total_errors
 
-        #for logkey
+        # for logkey
         # return total_results, output_results
 
         # for hypersphere distance
@@ -253,13 +263,13 @@ class Predictor():
             self.radius = center_dict["radius"]
             # self.center = self.center.view(1,-1)
 
-
         print("test normal predicting")
-        test_normal_results, test_normal_errors = self.helper(model, self.output_dir, "test_normal", vocab, scale, error_dict)
+        test_normal_results, test_normal_errors = self.helper(
+            model, self.output_dir, "test_normal", vocab, scale, error_dict)
 
         print("test abnormal predicting")
-        test_abnormal_results, test_abnormal_errors = self.helper(model, self.output_dir, "test_abnormal", vocab, scale, error_dict)
-
+        test_abnormal_results, test_abnormal_errors = self.helper(
+            model, self.output_dir, "test_abnormal", vocab, scale, error_dict)
 
         print("Saving test normal results")
         with open(self.model_dir + "test_normal_results", "wb") as f:
@@ -280,14 +290,18 @@ class Predictor():
         params = {"is_logkey": self.is_logkey, "is_time": self.is_time, "hypersphere_loss": self.hypersphere_loss,
                   "hypersphere_loss_test": self.hypersphere_loss_test}
         best_th, best_seq_th, FP, TP, TN, FN, P, R, F1 = find_best_threshold(test_normal_results,
-                                                                            test_abnormal_results,
-                                                                            params=params,
-                                                                            th_range=np.arange(10),
-                                                                            seq_range=np.arange(0,1,0.1))
+                                                                             test_abnormal_results,
+                                                                             params=params,
+                                                                             th_range=np.arange(
+                                                                                 10),
+                                                                             seq_range=np.arange(0, 1, 0.1))
 
-        print("best threshold: {}, best threshold ratio: {}".format(best_th, best_seq_th))
+        print(
+            "best threshold: {}, best threshold ratio: {}".format(
+                best_th, best_seq_th))
         print("TP: {}, TN: {}, FP: {}, FN: {}".format(TP, TN, FP, FN))
-        print('Precision: {:.2f}%, Recall: {:.2f}%, F1-measure: {:.2f}%'.format(P, R, F1))
+        print(
+            'Precision: {:.2f}%, Recall: {:.2f}%, F1-measure: {:.2f}%'.format(P, R, F1))
         elapsed_time = time.time() - start_time
         print('elapsed_time: {}'.format(elapsed_time))
 

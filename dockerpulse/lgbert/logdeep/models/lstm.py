@@ -3,7 +3,8 @@ import torch.nn as nn
 
 
 class deeplog(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, vocab_size, embedding_dim=None):
+    def __init__(self, input_size, hidden_size, num_layers,
+                 vocab_size, embedding_dim=None):
         super(deeplog, self).__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers
@@ -23,8 +24,10 @@ class deeplog(nn.Module):
         out = self.fc(out[:, -1, :])
         return out
 
+
 class Deeplog(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, vocab_size, embedding_dim):
+    def __init__(self, input_size, hidden_size,
+                 num_layers, vocab_size, embedding_dim):
         super(Deeplog, self).__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers
@@ -301,7 +304,6 @@ class robustlog(nn.Module):
                             batch_first=True)
         self.fc = nn.Linear(hidden_size, num_keys)
 
-
     def forward(self, features, device):
         input0 = features[0]
         h0 = torch.zeros(self.num_layers, input0.size(0),
@@ -313,9 +315,10 @@ class robustlog(nn.Module):
         return out
 
 
-#log key add embedding
+# log key add embedding
 class loganomaly(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, vocab_size, embedding_dim):
+    def __init__(self, input_size, hidden_size,
+                 num_layers, vocab_size, embedding_dim):
         super(loganomaly, self).__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers
@@ -327,9 +330,9 @@ class loganomaly(nn.Module):
         self.embedding.weight.requires_grad = True
 
         self.lstm0 = nn.LSTM(self.embedding_dim,
-                            hidden_size,
-                            num_layers,
-                            batch_first=True)
+                             hidden_size,
+                             num_layers,
+                             batch_first=True)
 
         self.lstm1 = nn.LSTM(input_size,
                              hidden_size,
@@ -358,4 +361,3 @@ class loganomaly(nn.Module):
         multi_out = torch.cat((out0[:, -1, :], out1[:, -1, :]), -1)
         out = self.fc(multi_out)
         return out
-

@@ -1,6 +1,4 @@
 import docker
-from langchain.chat_models import ChatOpenAI as OpenAI
-from dotenv import load_dotenv
 from ..lgbert.logparser import Drain, Spell
 
 # Load .env file
@@ -22,12 +20,14 @@ class Parser:
         return:
             BERTEmbeddings
         '''
-        parse = Drain.LogParser(log_format=self.log_format) if self.parser == "drain" else Spell.LogParser(log_format=self.log_format)
+        # parse = Drain.LogParser(log_format=self.log_format) if self.parser == "drain" else Spell.LogParser(log_format=self.log_format)
+
         # parse.parse(logs)
-        return logs
+        return logs[-400:]
 
     def _get_logs(self):
-        return self._process_logs(self.client.containers.get(self.container).logs().decode('utf-8'))
+        return self._process_logs(self.client.containers.get(
+            self.container).logs().decode('utf-8'))
 
 
 if __name__ == "__main__":

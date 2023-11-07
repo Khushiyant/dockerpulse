@@ -1,29 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from logdeep.tools.utils import save_parameters, plot_train_valid_loss
+from logdeep.dataset.sample import sliding_window, session_window, split_features
+from logdeep.dataset.log import log_dataset
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.model_selection import train_test_split
+from torch.utils.data import DataLoader
+import torch.nn as nn
+import torch
+import pickle
+from tqdm import tqdm
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 import gc
 import os
 import sys
 import time
 sys.path.append('../../')
-
-import seaborn as sns
-import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
-from tqdm import tqdm
-import pickle
-
-
-import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-
-from logdeep.dataset.log import log_dataset
-from logdeep.dataset.sample import sliding_window, session_window, split_features
-from logdeep.tools.utils import save_parameters, plot_train_valid_loss
 
 
 class Trainer():
@@ -72,7 +68,8 @@ class Trainer():
                                             scale_path=scale_path,
                                             min_len=self.min_len)
 
-            train_logkeys, valid_logkeys, train_times, valid_times = train_test_split(logkeys, times, test_size=self.valid_ratio)
+            train_logkeys, valid_logkeys, train_times, valid_times = train_test_split(
+                logkeys, times, test_size=self.valid_ratio)
 
             print("Loading vocab")
             with open(self.vocab_path, 'rb') as f:
@@ -198,7 +195,7 @@ class Trainer():
                 pd.DataFrame(values).to_csv(self.save_dir + key + "_log.csv",
                                             index=False)
             print("Log saved")
-        except:
+        except BaseException:
             print("Failed to save logs")
 
     def train(self, epoch):
@@ -233,7 +230,8 @@ class Trainer():
 
             # Basically it involves making optimizer steps after several batches
             # thus increasing effective batch size.
-            # https: // www.kaggle.com / c / understanding_cloud_organization / discussion / 105614
+            # https: // www.kaggle.com / c / understanding_cloud_organization /
+            # discussion / 105614
             if (i + 1) % self.accumulation_step == 0:
                 self.optimizer.step()
                 self.optimizer.zero_grad()

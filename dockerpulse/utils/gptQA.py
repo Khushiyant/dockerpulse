@@ -25,7 +25,7 @@ class GPTQA:
                 return r
 
     def generate_solution(self, logs):
-
+        _, logs = logs
         tools = [
             Tool(
                 name="search",

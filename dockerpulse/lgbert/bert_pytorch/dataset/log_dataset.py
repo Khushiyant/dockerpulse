@@ -4,8 +4,10 @@ import random
 import numpy as np
 from collections import defaultdict
 
+
 class LogDataset(Dataset):
-    def __init__(self, log_corpus, time_corpus, vocab, seq_len, corpus_lines=None, encoding="utf-8", on_memory=True, predict_mode=False, mask_ratio=0.15):
+    def __init__(self, log_corpus, time_corpus, vocab, seq_len, corpus_lines=None,
+                 encoding="utf-8", on_memory=True, predict_mode=False, mask_ratio=0.15):
         """
 
         :param corpus: log sessions/line
@@ -63,7 +65,9 @@ class LogDataset(Dataset):
 
                 if self.predict_mode:
                     tokens[i] = self.vocab.mask_index
-                    output_label.append(self.vocab.stoi.get(token, self.vocab.unk_index))
+                    output_label.append(
+                        self.vocab.stoi.get(
+                            token, self.vocab.unk_index))
 
                     time_label.append(time_int)
                     time_intervals[i] = 0
@@ -81,9 +85,12 @@ class LogDataset(Dataset):
 
                 # 10% randomly change token to current token
                 else:
-                    tokens[i] = self.vocab.stoi.get(token, self.vocab.unk_index)
+                    tokens[i] = self.vocab.stoi.get(
+                        token, self.vocab.unk_index)
 
-                output_label.append(self.vocab.stoi.get(token, self.vocab.unk_index))
+                output_label.append(
+                    self.vocab.stoi.get(
+                        token, self.vocab.unk_index))
 
                 time_intervals[i] = 0  # time mask value = 0
                 time_label.append(time_int)
@@ -115,7 +122,9 @@ class LogDataset(Dataset):
             time_input = seq[2][:seq_len]
             time_label = seq[3][:seq_len]
 
-            padding = [self.vocab.pad_index for _ in range(seq_len - len(bert_input))]
+            padding = [
+                self.vocab.pad_index for _ in range(
+                    seq_len - len(bert_input))]
             bert_input.extend(padding), bert_label.extend(padding), time_input.extend(padding), time_label.extend(
                 padding)
 
@@ -125,10 +134,13 @@ class LogDataset(Dataset):
             output["time_input"].append(time_input)
             output["time_label"].append(time_label)
 
-        output["bert_input"] = torch.tensor(output["bert_input"], dtype=torch.long)
-        output["bert_label"] = torch.tensor(output["bert_label"], dtype=torch.long)
-        output["time_input"] = torch.tensor(output["time_input"], dtype=torch.float)
-        output["time_label"] = torch.tensor(output["time_label"], dtype=torch.float)
+        output["bert_input"] = torch.tensor(
+            output["bert_input"], dtype=torch.long)
+        output["bert_label"] = torch.tensor(
+            output["bert_label"], dtype=torch.long)
+        output["time_input"] = torch.tensor(
+            output["time_input"], dtype=torch.float)
+        output["time_label"] = torch.tensor(
+            output["time_label"], dtype=torch.float)
 
         return output
-

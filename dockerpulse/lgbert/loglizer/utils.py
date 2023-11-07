@@ -1,7 +1,7 @@
 """
 The utility functions of loglizer
 
-Authors: 
+Authors:
     LogPAI Team
 
 """
@@ -45,4 +45,3 @@ def metrics(y_pred, y_true):
 
 if __name__ == "__main__":
     print(metrics(np.array([1, 1, 1, 0, 0, 0]), np.array([1, 0, 1, 1, 0, 0])))
-

@@ -8,7 +8,8 @@ from torch.utils.data import Dataset, Sampler
 
 
 class log_dataset(Dataset):
-    def __init__(self, logs, labels, seq=True, quan=False, sem=False, param=False):
+    def __init__(self, logs, labels, seq=True,
+                 quan=False, sem=False, param=False):
         self.seq = seq
         self.quan = quan
         self.sem = sem
@@ -45,4 +46,3 @@ class log_dataset(Dataset):
 
 if __name__ == '__main__':
     data_dir = '../../data/'
-

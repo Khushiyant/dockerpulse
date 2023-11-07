@@ -1,14 +1,14 @@
+from logdeep.dataset.session import sliding_window
+from tqdm import tqdm
+import argparse
+from logparser import Spell, Drain
+import numpy as np
+import pandas as pd
+import gc
+import os
 import sys
 sys.path.append('../')
 
-import os
-import gc
-import pandas as pd
-import numpy as np
-from logparser import Spell, Drain
-import argparse
-from tqdm import tqdm
-from logdeep.dataset.session import sliding_window
 
 tqdm.pandas()
 pd.options.mode.chained_assignment = None
@@ -22,16 +22,18 @@ output_dir = "../output/bgl/"
 log_file = "BGL.log"
 
 
-# In the first column of the log, "-" indicates non-alert messages while others are alert messages.
+# In the first column of the log, "-" indicates non-alert messages while
+# others are alert messages.
 def count_anomaly():
     total_size = 0
     normal_size = 0
     with open(data_dir + log_file, encoding="utf8") as f:
         for line in f:
             total_size += 1
-            if line.split(' ',1)[0] == '-':
+            if line.split(' ', 1)[0] == '-':
                 normal_size += 1
-    print("total size {}, abnormal size {}".format(total_size, total_size - normal_size))
+    print("total size {}, abnormal size {}".format(
+        total_size, total_size - normal_size))
 
 
 # def deeplog_df_transfer(df, features, target, time_index, window_size):
@@ -65,21 +67,35 @@ def deeplog_file_generator(filename, df, features):
 def parse_log(input_dir, output_dir, log_file, parser_type):
     log_format = '<Label> <Id> <Date> <Code1> <Time> <Code2> <Component1> <Component2> <Level> <Content>'
     regex = [
-        r'(0x)[0-9a-fA-F]+', #hexadecimal
+        r'(0x)[0-9a-fA-F]+',  # hexadecimal
         r'\d+.\d+.\d+.\d+',
         # r'/\w+( )$'
         r'\d+'
     ]
     keep_para = False
     if parser_type == "drain":
-        # the hyper parameter is set according to http://jmzhu.logpai.com/pub/pjhe_icws2017.pdf
+        # the hyper parameter is set according to
+        # http://jmzhu.logpai.com/pub/pjhe_icws2017.pdf
         st = 0.3  # Similarity threshold
         depth = 3  # Depth of all leaf nodes
-        parser = Drain.LogParser(log_format, indir=input_dir, outdir=output_dir, depth=depth, st=st, rex=regex, keep_para=keep_para)
+        parser = Drain.LogParser(
+            log_format,
+            indir=input_dir,
+            outdir=output_dir,
+            depth=depth,
+            st=st,
+            rex=regex,
+            keep_para=keep_para)
         parser.parse(log_file)
     elif parser_type == "spell":
         tau = 0.55
-        parser = Spell.LogParser(indir=data_dir, outdir=output_dir, log_format=log_format, tau=tau, rex=regex, keep_para=keep_para)
+        parser = Spell.LogParser(
+            indir=data_dir,
+            outdir=output_dir,
+            log_format=log_format,
+            tau=tau,
+            rex=regex,
+            keep_para=keep_para)
         parser.parse(log_file)
 
 #
@@ -144,29 +160,42 @@ if __name__ == "__main__":
 
     # sampling with sliding window
     deeplog_df = sliding_window(df[["timestamp", "Label", "EventId", "deltaT"]],
-                                para={"window_size": int(window_size)*60, "step_size": int(step_size) * 60}
-                                )
+                                para={
+        "window_size": int(window_size) * 60,
+        "step_size": int(step_size) * 60}
+    )
 
     #########
     # Train #
     #########
-    df_normal =deeplog_df[deeplog_df["Label"] == 0]
-    df_normal = df_normal.sample(frac=1, random_state=12).reset_index(drop=True) #shuffle
+    df_normal = deeplog_df[deeplog_df["Label"] == 0]
+    df_normal = df_normal.sample(
+        frac=1, random_state=12).reset_index(
+        drop=True)  # shuffle
     normal_len = len(df_normal)
     train_len = int(normal_len * train_ratio)
 
     train = df_normal[:train_len]
     # deeplog_file_generator(os.path.join(output_dir,'train'), train, ["EventId", "deltaT"])
-    deeplog_file_generator(os.path.join(output_dir,'train'), train, ["EventId"])
+    deeplog_file_generator(
+        os.path.join(
+            output_dir,
+            'train'),
+        train,
+        ["EventId"])
 
     print("training size {}".format(train_len))
-
 
     ###############
     # Test Normal #
     ###############
     test_normal = df_normal[train_len:]
-    deeplog_file_generator(os.path.join(output_dir, 'test_normal'), test_normal, ["EventId"])
+    deeplog_file_generator(
+        os.path.join(
+            output_dir,
+            'test_normal'),
+        test_normal,
+        ["EventId"])
     print("test normal size {}".format(normal_len - train_len))
 
     del df_normal
@@ -178,6 +207,11 @@ if __name__ == "__main__":
     # Test Abnormal #
     #################
     df_abnormal = deeplog_df[deeplog_df["Label"] == 1]
-    #df_abnormal["EventId"] = df_abnormal["EventId"].progress_apply(lambda e: event_index_map[e] if event_index_map.get(e) else UNK)
-    deeplog_file_generator(os.path.join(output_dir,'test_abnormal'), df_abnormal, ["EventId"])
+    # df_abnormal["EventId"] = df_abnormal["EventId"].progress_apply(lambda e: event_index_map[e] if event_index_map.get(e) else UNK)
+    deeplog_file_generator(
+        os.path.join(
+            output_dir,
+            'test_abnormal'),
+        df_abnormal,
+        ["EventId"])
     print('test abnormal size {}'.format(len(df_abnormal)))

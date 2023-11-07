@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+
 def read_json(filename):
     with open(filename, 'r') as load_f:
         file_dict = json.load(load_f)
@@ -47,6 +48,7 @@ def isfloat(x):
     else:
         return True
 
+
 def isint(x):
     try:
         a = float(x)
@@ -57,7 +59,8 @@ def isint(x):
         return a == b
 
 
-def split_features(data_path, train_ratio=1, scale=None, scale_path=None, min_len=0):
+def split_features(data_path, train_ratio=1, scale=None,
+                   scale_path=None, min_len=0):
     with open(data_path, 'r') as f:
         data = f.readlines()
 
@@ -86,11 +89,11 @@ def split_features(data_path, train_ratio=1, scale=None, scale_path=None, min_le
         times.append(tim.tolist())
 
     if scale is not None:
-        total_times = np.concatenate(times, axis=0).reshape(-1,1)
+        total_times = np.concatenate(times, axis=0).reshape(-1, 1)
         scale.fit(total_times)
 
         for i, tn in enumerate(times):
-            tn = np.array(tn).reshape(-1,1)
+            tn = np.array(tn).reshape(-1, 1)
             times[i] = scale.transform(tn).reshape(-1).tolist()
 
         with open(scale_path, 'wb') as f:
@@ -109,7 +112,7 @@ def sliding_window(data_iter, vocab, window_size, is_train=True):
             ...
         labels(list)
     '''
-    #event2semantic_vec = read_json(data_dir + 'hdfs/event2semantic_vec.json')
+    # event2semantic_vec = read_json(data_dir + 'hdfs/event2semantic_vec.json')
     result_logs = {}
     result_logs['Sequentials'] = []
     result_logs['Quantitatives'] = []
@@ -122,12 +125,12 @@ def sliding_window(data_iter, vocab, window_size, is_train=True):
 
     for line, params in zip(*data_iter):
         if num_sessions % 1000 == 0:
-            print("processed %s lines"%num_sessions, end='\r')
+            print("processed %s lines" % num_sessions, end='\r')
         num_sessions += 1
 
         line = [vocab.stoi.get(ln, vocab.unk_index) for ln in line]
 
-        session_len = max(len(line), window_size) + 1# predict the next one
+        session_len = max(len(line), window_size) + 1  # predict the next one
         padding_size = session_len - len(line)
         params = params + [0] * padding_size
         line = line + [vocab.pad_index] * padding_size
@@ -146,7 +149,8 @@ def sliding_window(data_iter, vocab, window_size, is_train=True):
             # Sequential_pattern = np.array(Sequential_pattern)[:, np.newaxis]
             # Quantitative_pattern = np.array(Quantitative_pattern)[:, np.newaxis]
             Sequential_pattern = np.array(Sequential_pattern)
-            Quantitative_pattern = np.array(Quantitative_pattern)[:, np.newaxis]
+            Quantitative_pattern = np.array(
+                Quantitative_pattern)[:, np.newaxis]
 
             result_logs['Sequentials'].append(Sequential_pattern)
             result_logs['Quantitatives'].append(Quantitative_pattern)
@@ -194,7 +198,7 @@ def session_window(data_dir, datatype, sample_ratio=1):
         for key in log_counter:
             Quantitative_pattern[key] = log_counter[key]
 
-        Sequential_pattern = np.array(Sequential_pattern) # [:, np.newaxis]
+        Sequential_pattern = np.array(Sequential_pattern)  # [:, np.newaxis]
         Quantitative_pattern = np.array(Quantitative_pattern)[:, np.newaxis]
         result_logs['Sequentials'].append(Sequential_pattern)
         result_logs['Quantitatives'].append(Quantitative_pattern)

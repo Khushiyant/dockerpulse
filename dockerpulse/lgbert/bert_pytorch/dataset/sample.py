@@ -36,10 +36,11 @@ def fixed_window(line, window_size, adaptive_window, seq_len=None, min_len=0):
 
     # if time duration exists in data
     if line.shape[1] == 2:
-        tim = line[:,1].astype(float)
+        tim = line[:, 1].astype(float)
         line = line[:, 0]
 
-        # the first time duration of a session should be 0, so max is window_size(mins) * 60
+        # the first time duration of a session should be 0, so max is
+        # window_size(mins) * 60
         tim[0] = 0
     else:
         line = line.squeeze()
@@ -73,7 +74,7 @@ def generate_train_valid(data_path, window_size=20, adaptive_window=True,
     print("before filtering short session")
     print("train size ", int(num_session - test_size))
     print("valid size ", int(test_size))
-    print("="*40)
+    print("=" * 40)
 
     logkey_seq_pairs = []
     time_seq_pairs = []
@@ -83,7 +84,8 @@ def generate_train_valid(data_path, window_size=20, adaptive_window=True,
             break
         session += 1
 
-        logkeys, times = fixed_window(line, window_size, adaptive_window, seq_len, min_len)
+        logkeys, times = fixed_window(
+            line, window_size, adaptive_window, seq_len, min_len)
         logkey_seq_pairs += logkeys
         time_seq_pairs += times
 
@@ -108,10 +110,9 @@ def generate_train_valid(data_path, window_size=20, adaptive_window=True,
     time_trainset = time_trainset[train_sort_index]
     time_validset = time_validset[valid_sort_index]
 
-    print("="*40)
+    print("=" * 40)
     print("Num of train seqs", len(logkey_trainset))
     print("Num of valid seqs", len(logkey_validset))
-    print("="*40)
+    print("=" * 40)
 
     return logkey_trainset, logkey_validset, time_trainset, time_validset
-

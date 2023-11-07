@@ -1,3 +1,7 @@
+from logdeep.tools.utils import *
+from bert_pytorch import Predictor, Trainer
+from bert_pytorch.dataset import WordVocab
+import argparse
 import sys
 sys.path.append("../")
 # sys.path.append("../../")
@@ -6,13 +10,6 @@ sys.path.append("../")
 # dirname = os.path.dirname(__file__)
 # filename = os.path.join(dirname, '../deeplog')
 
-
-import argparse
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
-
-from bert_pytorch.dataset import WordVocab
-from bert_pytorch import Predictor, Trainer
-from logdeep.tools.utils import *
 
 options = dict()
 options['device'] = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -26,7 +23,7 @@ options["vocab_path"] = options["output_dir"] + "vocab.pkl"
 options["window_size"] = 128
 options["adaptive_window"] = True
 options["seq_len"] = 512
-options["max_len"] = 512 # for position embedding
+options["max_len"] = 512  # for position embedding
 options["min_len"] = 10
 
 options["mask_ratio"] = 0.5
@@ -42,11 +39,11 @@ options["is_time"] = False
 options["hypersphere_loss"] = True
 options["hypersphere_loss_test"] = False
 
-options["scale"] = None # MinMaxScaler()
+options["scale"] = None  # MinMaxScaler()
 options["scale_path"] = options["model_dir"] + "scale.pkl"
 
 # model
-options["hidden"] = 256 # embedding size
+options["hidden"] = 256  # embedding size
 options["layers"] = 4
 options["attn_heads"] = 4
 
@@ -61,7 +58,7 @@ options["lr"] = 1e-3
 options["adam_beta1"] = 0.9
 options["adam_beta2"] = 0.999
 options["adam_weight_decay"] = 0.00
-options["with_cuda"]= True
+options["with_cuda"] = True
 options["cuda_devices"] = None
 options["log_freq"] = None
 
@@ -72,7 +69,8 @@ options["gaussian_std"] = 1
 
 seed_everything(seed=1234)
 print("device", options["device"])
-print("features logkey:{} time: {}".format(options["is_logkey"], options["is_time"]))
+print("features logkey:{} time: {}".format(
+    options["is_logkey"], options["is_time"]))
 print("mask ratio", options["mask_ratio"])
 
 if __name__ == "__main__":
@@ -110,8 +108,3 @@ if __name__ == "__main__":
         vocab = WordVocab(logs)
         print("vocab_size", len(vocab))
         vocab.save_vocab(options["vocab_path"])
-
-
-
-
-

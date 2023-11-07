@@ -10,7 +10,8 @@ from ..utils import metrics
 
 class OneClassSVM(object):
 
-    def __init__(self, kernel='rbf', degree=3, gamma='scale', nu=0.5, max_iter=-1):
+    def __init__(self, kernel='rbf', degree=3,
+                 gamma='scale', nu=0.5, max_iter=-1):
         """ The one class SVM model for anomaly detection
         Arguments
         ---------
@@ -21,7 +22,12 @@ class OneClassSVM(object):
             classifier: object, the classifier for anomaly detection
 
         """
-        self.classifier = svm.OneClassSVM(kernel=kernel, degree=degree, gamma=gamma, nu=nu, max_iter=max_iter)
+        self.classifier = svm.OneClassSVM(
+            kernel=kernel,
+            degree=degree,
+            gamma=gamma,
+            nu=nu,
+            max_iter=max_iter)
 
     def fit(self, X, y):
         """
@@ -51,5 +57,6 @@ class OneClassSVM(object):
         print('====== Evaluation summary ======')
         y_pred = self.predict(X)
         precision, recall, f1 = metrics(y_pred, y_true)
-        print('Precision: {:.3f}, recall: {:.3f}, F1-measure: {:.3f}\n'.format(precision, recall, f1))
+        print(
+            'Precision: {:.3f}, recall: {:.3f}, F1-measure: {:.3f}\n'.format(precision, recall, f1))
         return precision, recall, f1

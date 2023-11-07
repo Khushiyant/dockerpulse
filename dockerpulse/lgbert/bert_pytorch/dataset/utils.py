@@ -10,6 +10,8 @@ def save_parameters(options, filename):
             f.write("{}: {}\n".format(key, options[key]))
 
 # https://gist.github.com/KirillVladimirov/005ec7f762293d2321385580d3dbe335
+
+
 def seed_everything(seed=1234):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)

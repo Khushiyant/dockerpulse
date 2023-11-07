@@ -50,6 +50,8 @@ def main():
         if anomaly:
             sn = SlackNotifier()
             sn.send_notification(logs, sol)
+        else:
+            print("No anomaly detected")
 
     except Exception as e:
         print(e)

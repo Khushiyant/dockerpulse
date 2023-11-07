@@ -79,6 +79,6 @@ class Dockerpulse(Parser, Detection):
             anomaly = self.get_anamoly(self.logs)
             sol = self.qna.generate_solution(self.logs)
         except Exception as e:
-            return sol, e, None
+            return sol, anomaly, self.logs
 
-        return sol, anomaly
+        return sol, anomaly, self.logs

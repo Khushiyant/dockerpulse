@@ -46,10 +46,10 @@ def main():
 
         pulse = Dockerpulse(args.container, args.parser, args.log_format)
 
-        sol, anomaly, error_logs = pulse.analysis()
+        sol, anomaly, logs = pulse.analysis()
         if anomaly:
             sn = SlackNotifier()
-            sn.send_notification(error_logs, sol)
+            sn.send_notification(logs, sol)
 
     except Exception as e:
         print(e)

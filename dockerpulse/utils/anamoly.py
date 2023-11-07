@@ -1,44 +1,44 @@
-# from ..lgbert.bert_pytorch.predict_log import Predictor
-from langchain.chat_models import ChatOpenAI as OpenAI
-from dotenv import load_dotenv
-from duckduckgo_search import DDGS
-from langchain.agents import AgentType
+import re
+from langchain.llms import OpenAI
 from langchain.agents import initialize_agent, Tool
+from langchain.agents import AgentType
+from dotenv import load_dotenv
+from langchain.chains import LLMChain
+from openai import OpenAI
 
+# Load .env file
 load_dotenv()
-
 
 class Detection:
     def __init__(self, options):
-        # self.model = Predictor(options=options)
-        self.prompt = "Act as monitoing tool for deployed systems and detect anamolies in the logs. Answer with error line and type of anomaly as python tuple"
-        self.temperature = 0.4
+        self.prompt = "Here are my docker logs. Your job is to determine if the logs have any anamoly or not. If there is any anamoly, you need to return True, else False. Do not return any other text other than the boolean True or False."
+        self.temperature = 0.5
         self.max_tokens = 2048
         self.model_engine = "gpt-3.5-turbo"
-        self.llm = OpenAI(model_name=self.model_engine,
-                          temperature=self.temperature, max_tokens=self.max_tokens)
-
-    def _search(query):
-        with DDGS() as ddgs:
-            for r in ddgs.text(query):
-                return r
+        self.client = OpenAI()
+        # self.llm = OpenAI(model_name=self.model_engine,
+        #                       temperature=self.temperature, max_tokens=self.max_tokens)
 
     def get_anamoly(self, logs) -> bool:
-        tools = [
-            Tool(
-                name="search",
-                func=self._search,
-                description="Useful when you need to search for something on the internet.",
-            ),]
+        # Clean up the logs to remove any sensitive information
+        logs = re.sub(r"([0-9a-fA-F]{64})", "<HASH>", logs)
+        logs = re.sub(r"([0-9]{1,3}\.){3}[0-9]{1,3}", "<IP_ADDRESS>", logs)
 
         # Generate a solution using OpenAI's GPT-3 API
-        prompt = f"{self.prompt}\n\nLogs:\n{logs}\n\nSolution:"
-
-        agent = initialize_agent(
-            tools, self.llm, agent=AgentType.OPENAI_MULTI_FUNCTIONS, verbose=True)
-        answer = agent.run(prompt)
-        return answer
-
+        prompt = f"{self.prompt}\n\nLogs:\n{logs}"
+        chat_completion = self.client.chat.completions.create(
+        messages=[
+        {
+            "role": "user",
+            "content": prompt,
+        }
+    ],
+    model="gpt-3.5-turbo",
+)
+        if (chat_completion.choices[0].message.content.lower() == "true"):
+            return True
+        else:
+            return False
 
 if __name__ == "__main__":
     detect = Detection(None)

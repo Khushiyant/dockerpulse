@@ -48,6 +48,7 @@ def main():
 
         sol, anomaly, logs = pulse.analysis()
         if anomaly:
+            print(f"{logs}\n\n Approximate Solution proposed: {sol}")
             sn = SlackNotifier()
             sn.send_notification(logs, sol)
         else:

@@ -35,10 +35,7 @@ class Detection:
     ],
     model="gpt-3.5-turbo",
 )
-        if (chat_completion.choices[0].message.content.lower() == "true"):
-            return True
-        else:
-            return False
+        return (chat_completion.choices[0].message.content.lower() == "true")
 
 if __name__ == "__main__":
     detect = Detection(None)

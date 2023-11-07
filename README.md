@@ -2,7 +2,7 @@
 
 ## Overview
 
-![DockerPulse](./static/dockerpulse.png)
+![DockerPulse](static/dockerpulse.jpg)
 
 DockerPulse is a powerful tool designed to monitor and manage log data from multiple Docker containers. It processes log data from these containers, parses them using Drain and Spell parsers, detects anomalies using a BERT-based neural network called LogBERT, and generates solutions for detected anomalies with GPT-3.5-Turbo. Additionally, DockerPulse can send all updates and notifications to a connected Slack workspace app. This entire system is wrapped in a user-friendly command-line interface (CLI) application, making it easy to schedule and automate log monitoring tasks with the help of cron jobs.
 
@@ -108,8 +108,10 @@ Happy log monitoring with DockerPulse!
 
 - Tien, Chin‐Wei, et al. “KubAnomaly: Anomaly Detection for the Docker Orchestration Platform with Neural Network Approaches.” Engineering Reports, vol. 1, no. 5, 1 Dec. 2019, onlinelibrary.wiley.com/doi/full/10.1002/eng2.12080, https://doi.org/10.1002/eng2.12080. Accessed 7 Nov. 2023.
 
-‌- Zou, Zhuping, et al. “A Docker Container Anomaly Monitoring System Based on Optimized Isolation Forest.” IEEE Transactions on Cloud Computing, vol. 10, no. 1, 1 Jan. 2022, pp. 134–145, ieeexplore.ieee.org/abstract/document/8807263, https://doi.org/10.1109/tcc.2019.2935724. Accessed 7 Nov. 2023.
 
-- ‌Srinivasan, Siddharth, et al. “Probabilistic Real-Time Intrusion Detection System for Docker Containers.” Communications in Computer and Information Science, 1 Jan. 2019, pp. 336–347, link.springer.com/chapter/10.1007/978-981-13-5826-5_26, https://doi.org/10.1007/978-981-13-5826-5_26. Accessed 7 Nov. 2023.
+- Srinivasan, Siddharth, et al. “Probabilistic Real-Time Intrusion Detection System for Docker Containers.” Communications in Computer and Information Science, 1 Jan. 2019, pp. 336–347, link.springer.com/chapter/10.1007/978-981-13-5826-5_26, https://doi.org/10.1007/978-981-13-5826-5_26. Accessed 7 Nov. 2023.
+
+- ‌Zou, Zhuping, et al. “A Docker Container Anomaly Monitoring System Based on Optimized Isolation Forest.” IEEE Transactions on Cloud Computing, vol. 10, no. 1, 1 Jan. 2022, pp. 134–145, ieeexplore.ieee.org/abstract/document/8807263, https://doi.org/10.1109/tcc.2019.2935724. Accessed 7 Nov. 2023.
+
 
 ‌

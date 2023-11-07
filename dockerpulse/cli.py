@@ -71,7 +71,7 @@ class Dockerpulse(Parser, Detection):
 
     def analysis(self) -> AnyStr:
         anomaly = False
-        sol = "No solution found"
+        sol = "Information insufficient to produce solution"
 
         # TODO: Prompt for complete analysis of the logs
         self.qna = GPTQA()

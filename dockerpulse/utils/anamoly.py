@@ -26,15 +26,18 @@ class Detection:
 
         # Generate a solution using OpenAI's GPT-3 API
         prompt = f"{self.prompt}\n\nLogs:\n{logs}"
-        chat_completion = self.client.chat.completions.create(
-        messages=[
-        {
-            "role": "user",
-            "content": prompt,
-        }
-    ],
-    model="gpt-3.5-turbo",
-)
+        try:
+            chat_completion = self.client.chat.completions.create(
+            messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+            model="gpt-3.5-turbo",
+        )
+        except Exception as e:
+            raise e
         return (chat_completion.choices[0].message.content.lower() == "true")
 
 if __name__ == "__main__":

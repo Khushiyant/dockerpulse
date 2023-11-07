@@ -24,7 +24,7 @@ class Parser:
         # parse = Drain.LogParser(log_format=self.log_format) if self.parser == "drain" else Spell.LogParser(log_format=self.log_format)
 
         # parse.parse(logs)
-        return logs[-400:]
+        return logs[-500:]
 
     def _get_logs(self):
         return self._process_logs(self.client.containers.get(

@@ -47,6 +47,19 @@ DockerPulse is a powerful tool designed to monitor and manage log data from mult
 
 5. Start using DockerPulse by running the CLI commands as described in the Usage section.
 
+### Configuration
+
+DockerPulse requires the following configuration to run:
+
+```bash
+cp .env.sample .env
+```
+```bash
+OPENAI_API_KEY=YOUR_API_KEY
+SLACK_BOT_TOKEN=xoxb-xxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx
+CONTAINER_ID=xxxxxxxxxxxxxxxxxxx
+```
+
 ### Prerequisites
 
 Before you can use DockerPulse, ensure you have the following prerequisites installed:

@@ -66,7 +66,7 @@ Before you can use DockerPulse, ensure you have the following prerequisites inst
 
 - Docker: Make sure Docker is installed on the host machine, as DockerPulse interacts with Docker containers.
 
-- Python: You need Python 3.9 installed to run the DockerPulse CLI.
+- Python: You need atleast Python 3.9 installed to run the DockerPulse CLI.
 
 - DockerPulse: Clone the DockerPulse repository from GitHub and navigate to the project directory.
 
